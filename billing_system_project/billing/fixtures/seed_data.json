@@ -1,0 +1,116 @@
+[
+  {
+    "model": "billing.product",
+    "pk": 1,
+    "fields": {
+      "product_id": "SKU-1001",
+      "name": "Wireless Mouse",
+      "available_stock": 50,
+      "unit_price": "699.00",
+      "tax_percentage": "18.00",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "billing.product",
+    "pk": 2,
+    "fields": {
+      "product_id": "SKU-1002",
+      "name": "Mechanical Keyboard",
+      "available_stock": 30,
+      "unit_price": "2499.00",
+      "tax_percentage": "18.00",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "billing.product",
+    "pk": 3,
+    "fields": {
+      "product_id": "SKU-1003",
+      "name": "USB-C Cable",
+      "available_stock": 100,
+      "unit_price": "199.00",
+      "tax_percentage": "12.00",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "billing.product",
+    "pk": 4,
+    "fields": {
+      "product_id": "SKU-1004",
+      "name": "Notebook (A5)",
+      "available_stock": 200,
+      "unit_price": "49.00",
+      "tax_percentage": "5.00",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "billing.product",
+    "pk": 5,
+    "fields": {
+      "product_id": "SKU-1005",
+      "name": "Desk Lamp",
+      "available_stock": 20,
+      "unit_price": "899.00",
+      "tax_percentage": "18.00",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 1,
+    "fields": {
+      "value": 500
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 2,
+    "fields": {
+      "value": 50
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 3,
+    "fields": {
+      "value": 20
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 4,
+    "fields": {
+      "value": 10
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 5,
+    "fields": {
+      "value": 5
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 6,
+    "fields": {
+      "value": 2
+    }
+  },
+  {
+    "model": "billing.denomination",
+    "pk": 7,
+    "fields": {
+      "value": 1
+    }
+  }
+]

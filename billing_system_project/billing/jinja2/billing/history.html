@@ -1,0 +1,41 @@
+{% extends "billing/base.html" %}
+
+{% block title %}Previous Purchases{% endblock %}
+
+{% block content %}
+<p><a href="{{ url('billing-page') }}">&larr; Back to billing page</a></p>
+
+<form method="get">
+  <div class="row">
+    <label for="customer_email">Customer Email</label>
+    <input type="email" id="customer_email" name="customer_email" value="{{ email }}" placeholder="Email ID" required>
+    <button type="submit" class="btn-primary">Search</button>
+  </div>
+</form>
+
+{% if email %}
+  <div class="section">
+    <strong>Purchases for {{ email }}</strong>
+    {% if purchases %}
+    <table>
+      <thead>
+        <tr><th>Bill #</th><th>Date</th><th>Net Price</th><th>Payable</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for purchase in purchases %}
+        <tr>
+          <td>{{ purchase.id }}</td>
+          <td>{{ purchase.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+          <td>{{ purchase.net_price }}</td>
+          <td>{{ purchase.rounded_net_price }}</td>
+          <td><a href="{{ url('purchase-detail-page', args=[purchase.id]) }}">View items</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No purchases found for this email.</p>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

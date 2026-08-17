@@ -1,0 +1,134 @@
+{% extends "billing/base.html" %}
+
+{% block title %}Billing Page{% endblock %}
+
+{% block content %}
+<div class="muted" style="text-align:right;">
+  <a href="{{ url('purchase-history-page') }}">View previous purchases &rarr;</a>
+</div>
+
+<form id="billing-form">
+  <div class="row">
+    <label for="customer_email">Customer Email</label>
+    <input type="email" id="customer_email" name="customer_email" placeholder="Email ID" required>
+  </div>
+
+  <div class="section">
+    <div class="row" style="justify-content: space-between;">
+      <strong>Bill section</strong>
+      <button type="button" class="btn-secondary" id="add-item-btn">Add New</button>
+    </div>
+    <div id="items-container">
+      <!-- Rows are injected dynamically by JS when "Add New" is clicked. -->
+    </div>
+  </div>
+
+  <div class="section">
+    <strong>Denominations</strong>
+    <p class="muted">Enter how many of each note/coin are currently available in the shop till.
+      Used to work out the change to hand back to the customer.</p>
+    <div id="denominations-container">
+      {% for value in default_denominations %}
+      <div class="row">
+        <label>{{ value }}</label>
+        <input type="number" min="0" step="1" placeholder="Count" class="denom-count" data-value="{{ value }}">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section row">
+    <label for="cash_paid">Cash paid by customer</label>
+    <input type="number" min="0" step="0.01" id="cash_paid" name="cash_paid" placeholder="Amount" required>
+  </div>
+
+  <div id="form-error" class="error" style="display:none;"></div>
+
+  <div class="row" style="justify-content: flex-end;">
+    <button type="reset" class="btn-secondary">Cancel</button>
+    <button type="submit" class="btn-primary" id="generate-bill-btn">Generate Bill</button>
+  </div>
+</form>
+
+<template id="item-row-template">
+  <div class="row item-row">
+    <input type="text" class="item-product-id" placeholder="Product ID" required>
+    <input type="number" class="item-quantity" min="1" step="1" placeholder="Quantity" required>
+    <button type="button" class="btn-secondary remove-item-btn">Remove</button>
+  </div>
+</template>
+
+<script>
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : "";
+}
+
+function addItemRow() {
+  const template = document.getElementById("item-row-template");
+  const clone = template.content.cloneNode(true);
+  clone.querySelector(".remove-item-btn").addEventListener("click", function (e) {
+    e.target.closest(".item-row").remove();
+  });
+  document.getElementById("items-container").appendChild(clone);
+}
+
+document.getElementById("add-item-btn").addEventListener("click", addItemRow);
+// Start with one row so the form isn't empty on load.
+addItemRow();
+
+document.getElementById("billing-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const errorBox = document.getElementById("form-error");
+  errorBox.style.display = "none";
+
+  const items = [];
+  document.querySelectorAll("#items-container .item-row").forEach(function (row) {
+    const productId = row.querySelector(".item-product-id").value.trim();
+    const quantity = row.querySelector(".item-quantity").value;
+    if (productId && quantity) {
+      items.push({ product_id: productId, quantity: parseInt(quantity, 10) });
+    }
+  });
+
+  const denominations = [];
+  document.querySelectorAll(".denom-count").forEach(function (input) {
+    const count = input.value ? parseInt(input.value, 10) : 0;
+    denominations.push({ value: parseInt(input.dataset.value, 10), count: count });
+  });
+
+  const payload = {
+    customer_email: document.getElementById("customer_email").value.trim(),
+    items: items,
+    denominations: denominations,
+    cash_paid: document.getElementById("cash_paid").value,
+  };
+
+  const submitBtn = document.getElementById("generate-bill-btn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Generating...";
+
+  try {
+    const response = await fetch("{{ url('generate-bill') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || JSON.stringify(data));
+    }
+    // Redirect to Page 2 (server-rendered bill detail) for the new purchase.
+    window.location.href = "/purchases/" + data.id + "/";
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.style.display = "block";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Generate Bill";
+  }
+});
+</script>
+{% endblock %}

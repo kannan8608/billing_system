@@ -1,0 +1,79 @@
+{% extends "billing/base.html" %}
+
+{% block title %}Bill #{{ purchase.id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <label>Customer Email</label>
+  <span>{{ purchase.customer_email }}</span>
+</div>
+<div class="row">
+  <label>Bill Date</label>
+  <span>{{ purchase.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+</div>
+
+<div class="section">
+  <strong>Bill section</strong>
+  <table>
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Purchase Price</th>
+        <th>Tax % for item</th>
+        <th>Tax payable for item</th>
+        <th>Total price of the item</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in purchase.items.all() %}
+      <tr>
+        <td>{{ item.product_id_snapshot }} ({{ item.product_name_snapshot }})</td>
+        <td>{{ item.unit_price_snapshot }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.purchase_price }}</td>
+        <td>{{ item.tax_percentage_snapshot }}</td>
+        <td>{{ item.tax_payable }}</td>
+        <td>{{ item.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="totals">
+  <div>Total price without tax: <strong>{{ purchase.total_price_without_tax }}</strong></div>
+  <div>Total tax payable: <strong>{{ purchase.total_tax_payable }}</strong></div>
+  <div>Net price of the purchased item: <strong>{{ purchase.net_price }}</strong></div>
+  <div>Rounded down value of the purchased items net price: <strong>{{ purchase.rounded_net_price }}</strong></div>
+  <div>Cash paid by customer: <strong>{{ purchase.cash_paid }}</strong></div>
+  <div>Balance payable to the customer: <strong>{{ purchase.balance_amount }}</strong></div>
+</div>
+
+<div class="section">
+  <strong>Balance Denomination:</strong>
+  <table style="width: 260px;">
+    <tbody>
+      {% for bd in purchase.balance_denominations.all() %}
+      <tr>
+        <td>{{ bd.denomination_value }}</td>
+        <td>{{ bd.count }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="2" class="muted">No change due.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="muted">
+  {% if purchase.email_sent %}
+    Invoice emailed to the customer.
+  {% else %}
+    Invoice email is being sent in the background (or check server logs / console output if it failed).
+  {% endif %}
+</p>
+
+<p><a href="{{ url('billing-page') }}">&larr; Back to billing page</a></p>
+{% endblock %}
